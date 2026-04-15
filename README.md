@@ -2,7 +2,7 @@
 
 A site-specific WordPress plugin that provides essential WordPress tweaks and customizations that survive theme updates.
 
-**Version:** 1.2.0
+**Version:** 1.3.0
 
 **Repository:** [https://github.com/jones3036/integrate-wp-functions](https://github.com/jones3036/integrate-wp-functions)
 
@@ -31,6 +31,11 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
   - Removes inline event handlers (onclick, onload, etc.)
   - Prevents XSS attacks while maintaining SVG functionality
 
+### Performance & Hardening
+- **Limit Post Revisions** - Keeps only the last 3 revisions per post
+- **Remove Asset Query Strings** - Removes `?ver=` from scripts and styles for cache-friendly URLs
+- **REST API Lockdown** - Optionally disables REST API access for unauthenticated visitors
+
 ### Admin Notifications
 - **Plugin Recommendations** - Displays a notice to administrators about recommended plugins not currently installed:
   - Elementor / Elementor Pro
@@ -42,6 +47,7 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
   - CookieYes
   - LiteSpeed Cache
   - WordPress Importer
+- **Plugin Install/Activate Links** - Provides direct install or activate links for recommended plugins when possible
 - **Update Checker** - Automatically checks GitHub for new releases and notifies admins when updates are available, allowing one-click updates directly from the plugins page
 
 ## Installation
@@ -53,11 +59,11 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
 
 ## Usage
 
-This plugin works automatically once activated. No configuration is required—all tweaks are applied immediately.
+This plugin works automatically once activated. You can also customize behavior from the new settings page at **Settings > Integrate WP Functions**.
 
 ### Customization
 
-To disable specific features, comment out the relevant sections in `custom-functions.php`:
+To disable specific features, use the settings page or comment out the relevant sections in `custom-functions.php` if needed:
 
 ```php
 // Example: Comment out to keep Gutenberg enabled
