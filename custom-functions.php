@@ -2,7 +2,8 @@
 /**
  * Plugin Name: Integrate WP theme custom functions
  * Description: Site-specific WordPress tweaks that should survive theme updates.
- * Version: 1.0.0
+ * Version: 1.1.0
+ * Repository: https://github.com/jones3036/integrate-wp-functions
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -83,14 +84,14 @@ add_action( 'admin_notices', function() {
 		'elementor/elementor.php'                    => 'Elementor',
 		'elementor-pro/elementor-pro.php'            => 'Elementor Pro',
 		'wordpress-seo/wp-seo.php'                   => 'Yoast SEO',
-		'autodescription/autodescription.php'        => 'The SEO Framework',
-		'redirection/redirection.php'                => 'Redirection',
-		'updraftplus/updraftplus.php'                => 'UpdraftPlus',
-		'wp-mail-smtp/wp_mail_smtp.php'              => 'WP Mail SMTP',
-		'code-snippets/code-snippets.php'            => 'Code Snippets',
-		'cookieyes/cookieyes.php'                    => 'CookieYes',
-		'litespeed-cache/litespeed-cache.php'        => 'LiteSpeed Cache',
-		'wordpress-importer/wordpress-importer.php'  => 'WordPress Importer',
+		// 'autodescription/autodescription.php'        => 'The SEO Framework',
+		// 'redirection/redirection.php'                => 'Redirection',
+		// 'updraftplus/updraftplus.php'                => 'UpdraftPlus',
+		// 'wp-mail-smtp/wp_mail_smtp.php'              => 'WP Mail SMTP',
+		// 'code-snippets/code-snippets.php'            => 'Code Snippets',
+		// 'cookieyes/cookieyes.php'                    => 'CookieYes',
+		// 'litespeed-cache/litespeed-cache.php'        => 'LiteSpeed Cache',
+		// 'wordpress-importer/wordpress-importer.php'  => 'WordPress Importer',
 	);
 
 	$missing_plugins = array();
