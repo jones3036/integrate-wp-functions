@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Integrate WP theme custom functions
  * Description: Site-specific WordPress tweaks that should survive theme updates.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Repository: https://github.com/jones3036/integrate-wp-functions
  */
 
@@ -129,5 +129,82 @@ add_filter( 'wp_handle_upload_prefilter', function( $file ) {
 		file_put_contents( $file_path, $svg_data );
 	}
 	return $file;
+} );
+
+/*** GitHub-based Update Checker ***/
+add_action( 'plugins_loaded', function() {
+	global $wp_version;
+	
+	$plugin_file = plugin_basename( __FILE__ );
+	$plugin_data = get_plugin_data( __FILE__ );
+	$current_version = $plugin_data['Version'];
+	$repo_url = 'https://api.github.com/repos/jones3036/integrate-wp-functions';
+	
+	// Fetch latest release from GitHub
+	$transient_key = 'iwf_update_check';
+	$remote_data = get_transient( $transient_key );
+	
+	if ( false === $remote_data ) {
+		$remote_response = wp_remote_get(
+			$repo_url . '/releases/latest',
+			array(
+				'headers'   => array( 'Accept' => 'application/vnd.github.v3+json' ),
+				'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+			)
+		);
+		
+		if ( is_wp_error( $remote_response ) ) {
+			return;
+		}
+		
+		$remote_data = json_decode( wp_remote_retrieve_body( $remote_response ), true );
+		
+		if ( is_array( $remote_data ) && isset( $remote_data['tag_name'] ) ) {
+			set_transient( $transient_key, $remote_data, 12 * HOUR_IN_SECONDS );
+		}
+	}
+	
+	if ( ! is_array( $remote_data ) || ! isset( $remote_data['tag_name'] ) ) {
+		return;
+	}
+	
+	$remote_version = ltrim( $remote_data['tag_name'], 'v' );
+	
+	// Check if update is available
+	if ( version_compare( $remote_version, $current_version, '>' ) ) {
+		$plugin_update = (object) array(
+			'id'          => 'integrate-wp-functions',
+			'slug'        => 'integrate-wp-functions',
+			'plugin'      => $plugin_file,
+			'new_version' => $remote_version,
+			'url'         => $remote_data['html_url'],
+			'package'     => $remote_data['zipball_url'],
+			'tested'      => $wp_version,
+			'requires'    => '5.0',
+		);
+		
+		// Store update in transient for WordPress to find
+		$updates = get_site_transient( 'update_plugins' );
+		if ( ! is_object( $updates ) ) {
+			$updates = new stdClass();
+		}
+		if ( ! isset( $updates->response ) ) {
+			$updates->response = array();
+		}
+		
+		$updates->response[ $plugin_file ] = $plugin_update;
+		set_site_transient( 'update_plugins', $updates, 12 * HOUR_IN_SECONDS );
+	}
+} );
+
+// Clear transient on plugin activation/deactivation
+add_action( 'activated_plugin', function() {
+	delete_transient( 'iwf_update_check' );
+	delete_site_transient( 'update_plugins' );
+} );
+
+add_action( 'deactivated_plugin', function() {
+	delete_transient( 'iwf_update_check' );
+	delete_site_transient( 'update_plugins' );
 } );
 

@@ -2,7 +2,7 @@
 
 A site-specific WordPress plugin that provides essential WordPress tweaks and customizations that survive theme updates.
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 
 **Repository:** [https://github.com/jones3036/integrate-wp-functions](https://github.com/jones3036/integrate-wp-functions)
 
@@ -42,6 +42,7 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
   - CookieYes
   - LiteSpeed Cache
   - WordPress Importer
+- **Update Checker** - Automatically checks GitHub for new releases and notifies admins when updates are available, allowing one-click updates directly from the plugins page
 
 ## Installation
 
