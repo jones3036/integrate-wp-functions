@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Integrate WP theme custom functions
+ * Plugin Name: Integrate WP Theme Custom Functions
  * Plugin URI: https://github.com/jones3036/integrate-wp-functions
  * Description: Site-specific WordPress tweaks that survive theme updates.
  * Version: 1.3.0
- * Author: Karl Jones
- * Author URI: https://github.com/jones3036
+ * Author: Integrate Solutions
+ * Author URI: https://integrate-it.co.uk
  * Text Domain: integrate-wp-functions
  * Domain Path: /languages
  * Repository: https://github.com/jones3036/integrate-wp-functions
@@ -413,46 +413,46 @@ function iwf_get_recommended_plugins() {
 			'plugin_file' => 'wordpress-seo/wp-seo.php',
 			'slug'        => 'wordpress-seo',
 		),
-		'tsf' => array(
-			'name'        => 'The SEO Framework',
-			'plugin_file' => 'autodescription/autodescription.php',
-			'slug'        => 'autodescription',
-		),
-		'redirection' => array(
-			'name'        => 'Redirection',
-			'plugin_file' => 'redirection/redirection.php',
-			'slug'        => 'redirection',
-		),
-		'updraftplus' => array(
-			'name'        => 'UpdraftPlus',
-			'plugin_file' => 'updraftplus/updraftplus.php',
-			'slug'        => 'updraftplus',
-		),
-		'wp-mail-smtp' => array(
-			'name'        => 'WP Mail SMTP',
-			'plugin_file' => 'wp-mail-smtp/wp_mail_smtp.php',
-			'slug'        => 'wp-mail-smtp',
-		),
-		'code-snippets' => array(
-			'name'        => 'Code Snippets',
-			'plugin_file' => 'code-snippets/code-snippets.php',
-			'slug'        => 'code-snippets',
-		),
-		'cookieyes' => array(
-			'name'        => 'CookieYes',
-			'plugin_file' => 'cookieyes/cookieyes.php',
-			'slug'        => 'cookieyes',
-		),
-		'litespeed-cache' => array(
-			'name'        => 'LiteSpeed Cache',
-			'plugin_file' => 'litespeed-cache/litespeed-cache.php',
-			'slug'        => 'litespeed-cache',
-		),
-		'wordpress-importer' => array(
-			'name'        => 'WordPress Importer',
-			'plugin_file' => 'wordpress-importer/wordpress-importer.php',
-			'slug'        => 'wordpress-importer',
-		),
+		// 'tsf' => array(
+		// 	'name'        => 'The SEO Framework',
+		// 	'plugin_file' => 'autodescription/autodescription.php',
+		// 	'slug'        => 'autodescription',
+		// ),
+		// 'redirection' => array(
+		// 	'name'        => 'Redirection',
+		// 	'plugin_file' => 'redirection/redirection.php',
+		// 	'slug'        => 'redirection',
+		// ),
+		// 'updraftplus' => array(
+		// 	'name'        => 'UpdraftPlus',
+		// 	'plugin_file' => 'updraftplus/updraftplus.php',
+		// 	'slug'        => 'updraftplus',
+		// ),
+		// 'wp-mail-smtp' => array(
+		// 	'name'        => 'WP Mail SMTP',
+		// 	'plugin_file' => 'wp-mail-smtp/wp_mail_smtp.php',
+		// 	'slug'        => 'wp-mail-smtp',
+		// ),
+		// 'code-snippets' => array(
+		// 	'name'        => 'Code Snippets',
+		// 	'plugin_file' => 'code-snippets/code-snippets.php',
+		// 	'slug'        => 'code-snippets',
+		// ),
+		// 'cookieyes' => array(
+		// 	'name'        => 'CookieYes',
+		// 	'plugin_file' => 'cookieyes/cookieyes.php',
+		// 	'slug'        => 'cookieyes',
+		// ),
+		// 'litespeed-cache' => array(
+		// 	'name'        => 'LiteSpeed Cache',
+		// 	'plugin_file' => 'litespeed-cache/litespeed-cache.php',
+		// 	'slug'        => 'litespeed-cache',
+		// ),
+		// 'wordpress-importer' => array(
+		// 	'name'        => 'WordPress Importer',
+		// 	'plugin_file' => 'wordpress-importer/wordpress-importer.php',
+		// 	'slug'        => 'wordpress-importer',
+		// ),
 	);
 }
 
