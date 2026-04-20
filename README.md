@@ -2,7 +2,7 @@
 
 A site-specific WordPress plugin that provides essential WordPress tweaks and customizations that survive theme updates.
 
-**Version:** 1.3.0
+**Version:** 1.3.1
 
 **Repository:** [https://github.com/jones3036/integrate-wp-functions](https://github.com/jones3036/integrate-wp-functions)
 
@@ -24,12 +24,6 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
   - Hides comment support from all post types
   - Disables comment feeds
   - Removes comment-related dashboard widgets
-
-### Media
-- **Enable SVG Uploads** - Allows SVG and SVGZ file uploads in the media library with security sanitization:
-  - Strips script tags from SVG files
-  - Removes inline event handlers (onclick, onload, etc.)
-  - Prevents XSS attacks while maintaining SVG functionality
 
 ### Performance & Hardening
 - **Limit Post Revisions** - Keeps only the last 3 revisions per post
@@ -88,7 +82,6 @@ integrate-wp-functions/
 
 - This plugin is designed for site-specific customizations
 - All changes persist across theme updates
-- SVG uploads are sanitized to prevent security vulnerabilities
 - The plugin only affects admin users for visibility-related features
 
 ## License

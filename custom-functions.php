@@ -3,7 +3,7 @@
  * Plugin Name: Integrate WP Theme Custom Functions
  * Plugin URI: https://github.com/jones3036/integrate-wp-functions
  * Description: Site-specific WordPress tweaks that survive theme updates.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Integrate Solutions
  * Author URI: https://integrate-it.co.uk
  * Text Domain: integrate-wp-functions
@@ -46,7 +46,6 @@ function iwf_get_default_settings() {
 		'minimize_asset_query_strings'   => true,
 		'limit_revisions'                => true,
 		'disable_rest_for_guests'        => false,
-		'enable_svg_uploads'             => true,
 		'recommended_plugins_notice'     => true,
 	);
 }
@@ -122,7 +121,6 @@ function iwf_register_settings() {
 		'minimize_asset_query_strings' => __( 'Remove query strings from static assets', 'integrate-wp-functions' ),
 		'limit_revisions'              => __( 'Limit post revisions to 3', 'integrate-wp-functions' ),
 		'disable_rest_for_guests'      => __( 'Disable REST API for unauthenticated visitors', 'integrate-wp-functions' ),
-		'enable_svg_uploads'           => __( 'Allow SVG uploads with sanitization', 'integrate-wp-functions' ),
 		'recommended_plugins_notice'   => __( 'Show recommended plugin install/activate notices', 'integrate-wp-functions' ),
 	);
 
@@ -251,11 +249,6 @@ function iwf_setup_features() {
 		add_filter( 'rest_authentication_errors', 'iwf_disable_rest_for_guests' );
 	}
 
-	if ( iwf_setting_enabled( 'enable_svg_uploads' ) ) {
-		add_filter( 'upload_mimes', 'iwf_enable_svg_uploads' );
-		add_filter( 'wp_handle_upload_prefilter', 'iwf_sanitize_svg_uploads' );
-	}
-
 	if ( iwf_setting_enabled( 'recommended_plugins_notice' ) ) {
 		add_action( 'admin_notices', 'iwf_recommended_plugins_notice' );
 	}
@@ -364,33 +357,6 @@ function iwf_disable_rest_for_guests( $result ) {
 	}
 
 	return $result;
-}
-
-/**
- * Enable SVG uploads.
- */
-function iwf_enable_svg_uploads( $mimes ) {
-	$mimes['svg']  = 'image/svg+xml';
-	$mimes['svgz'] = 'image/svg+xml';
-
-	return $mimes;
-}
-
-/**
- * Sanitize SVG uploads to prevent XSS attacks.
- */
-function iwf_sanitize_svg_uploads( $file ) {
-	if ( in_array( $file['type'], array( 'image/svg+xml', 'image/svg' ), true ) ) {
-		$file_path = $file['tmp_name'];
-		$svg_data = file_get_contents( $file_path );
-
-		$svg_data = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $svg_data );
-		$svg_data = preg_replace( '/on\w+\s*=\s*["\']([^"\']*)["\']|on\w+\s*=\s*(\S+)/i', '', $svg_data );
-
-		file_put_contents( $file_path, $svg_data );
-	}
-
-	return $file;
 }
 
 /**
