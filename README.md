@@ -2,7 +2,7 @@
 
 A site-specific WordPress plugin that provides essential WordPress tweaks and customizations that survive theme updates.
 
-**Version:** 1.3.1
+**Version:** 1.4.0
 
 **Repository:** [https://github.com/jones3036/integrate-wp-functions](https://github.com/jones3036/integrate-wp-functions)
 
@@ -12,6 +12,11 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
 - **Disable XML-RPC** - Prevents XML-RPC attacks and improves site security
 - **Clean WordPress Head Output** - Removes unnecessary meta tags and links that expose WordPress version and unnecessary functionality
 - **Hide Admin Bar** - Hides the admin bar on the front end for all users
+- **Hide WordPress Version** - Removes WordPress version from frontend (hides from generators and meta tags)
+- **Disable User Enumeration** - Blocks access to `?author=` archives to prevent user discovery
+- **Disable Login Error Hints** - Doesn't reveal whether a username exists on login form
+- **Force SSL on Admin Login** - Enforces secure HTTPS connection for admin login
+- **Remove "Howdy" Greeting** - Simplifies the admin bar greeting message
 
 ### Content Management
 - **Disable Gutenberg for Posts** - Disables the block editor for post creation/editing
@@ -29,6 +34,10 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
 - **Limit Post Revisions** - Keeps only the last 3 revisions per post
 - **Remove Asset Query Strings** - Removes `?ver=` from scripts and styles for cache-friendly URLs
 - **REST API Lockdown** - Optionally disables REST API access for unauthenticated visitors
+
+### Admin & Integration
+- **Force Strong Password Requirements** - Enforces 12+ characters, uppercase, lowercase, numbers, and special characters
+- **Disable Jetpack Integration** - Prevents Jetpack from loading and showing promotional notices
 
 ### Admin Notifications
 - **Plugin Recommendations** - Displays a notice to administrators about recommended plugins not currently installed:

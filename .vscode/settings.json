@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd \"/Users/karljones/Local Sites/Integrate WP Plugin Functions/integrate-wp-functions\" && php -l custom-functions\\.php$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

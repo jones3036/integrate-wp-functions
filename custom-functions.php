@@ -3,7 +3,7 @@
  * Plugin Name: Integrate WP Theme Custom Functions
  * Plugin URI: https://github.com/jones3036/integrate-wp-functions
  * Description: Site-specific WordPress tweaks that survive theme updates.
- * Version: 1.3.1
+ * Version: 1.4.0
  * Author: Integrate Solutions
  * Author URI: https://integrate-it.co.uk
  * Text Domain: integrate-wp-functions
@@ -47,6 +47,13 @@ function iwf_get_default_settings() {
 		'limit_revisions'                => true,
 		'disable_rest_for_guests'        => false,
 		'recommended_plugins_notice'     => true,
+		'hide_wp_version'                => true,
+		'disable_user_enumeration'       => true,
+		'disable_login_errors'           => true,
+		'force_admin_ssl'                => true,
+		'remove_howdy_greeting'          => true,
+		'disable_jetpack'                => true,
+		'force_strong_passwords'         => true,
 	);
 }
 
@@ -122,6 +129,13 @@ function iwf_register_settings() {
 		'limit_revisions'              => __( 'Limit post revisions to 3', 'integrate-wp-functions' ),
 		'disable_rest_for_guests'      => __( 'Disable REST API for unauthenticated visitors', 'integrate-wp-functions' ),
 		'recommended_plugins_notice'   => __( 'Show recommended plugin install/activate notices', 'integrate-wp-functions' ),
+		'hide_wp_version'              => __( 'Hide WordPress version from frontend', 'integrate-wp-functions' ),
+		'disable_user_enumeration'     => __( 'Disable user enumeration via ?author= archives', 'integrate-wp-functions' ),
+		'disable_login_errors'         => __( 'Disable login error hints (hide if user exists)', 'integrate-wp-functions' ),
+		'force_admin_ssl'              => __( 'Force SSL on admin login', 'integrate-wp-functions' ),
+		'remove_howdy_greeting'        => __( 'Remove "Howdy" greeting in admin bar', 'integrate-wp-functions' ),
+		'disable_jetpack'              => __( 'Disable Jetpack integration', 'integrate-wp-functions' ),
+		'force_strong_passwords'       => __( 'Force strong password requirements', 'integrate-wp-functions' ),
 	);
 
 	foreach ( $fields as $name => $label ) {
@@ -251,6 +265,39 @@ function iwf_setup_features() {
 
 	if ( iwf_setting_enabled( 'recommended_plugins_notice' ) ) {
 		add_action( 'admin_notices', 'iwf_recommended_plugins_notice' );
+	}
+
+	if ( iwf_setting_enabled( 'hide_wp_version' ) ) {
+		add_filter( 'the_generator', '__return_empty_string' );
+		remove_action( 'wp_head', 'wp_generator' );
+	}
+
+	if ( iwf_setting_enabled( 'disable_user_enumeration' ) ) {
+		add_action( 'template_redirect', 'iwf_disable_user_enumeration' );
+	}
+
+	if ( iwf_setting_enabled( 'disable_login_errors' ) ) {
+		add_filter( 'login_errors', '__return_empty_string' );
+	}
+
+	if ( iwf_setting_enabled( 'force_admin_ssl' ) ) {
+		if ( defined( 'FORCE_SSL_ADMIN' ) === false ) {
+			define( 'FORCE_SSL_ADMIN', true );
+		}
+	}
+
+	if ( iwf_setting_enabled( 'remove_howdy_greeting' ) ) {
+		add_filter( 'admin_bar_menu', 'iwf_remove_howdy_greeting', 25 );
+	}
+
+	if ( iwf_setting_enabled( 'disable_jetpack' ) ) {
+		add_filter( 'jetpack_just_in_time_msgs', '__return_false' );
+		add_filter( 'jetpack_show_promotions', '__return_false' );
+		deactivate_plugins( 'jetpack/jetpack.php' );
+	}
+
+	if ( iwf_setting_enabled( 'force_strong_passwords' ) ) {
+		add_action( 'user_profile_update_errors', 'iwf_validate_password_strength', 10, 3 );
 	}
 }
 add_action( 'init', 'iwf_setup_features' );
@@ -463,6 +510,66 @@ function iwf_recommended_plugins_notice() {
 	}
 
 	echo '<div class="notice notice-info"><p><strong>' . esc_html__( 'Recommended plugins:', 'integrate-wp-functions' ) . '</strong> ' . wp_kses_post( implode( ', ', $items ) ) . '</p></div>';
+}
+
+/**
+ * Disable user enumeration via ?author= archives.
+ */
+function iwf_disable_user_enumeration() {
+	if ( is_author() ) {
+		wp_safe_redirect( home_url() );
+		exit;
+	}
+}
+
+/**
+ * Remove "Howdy" greeting from admin bar.
+ */
+function iwf_remove_howdy_greeting( $wp_admin_bar ) {
+	if ( isset( $wp_admin_bar->get_node( 'my-account' )->title ) ) {
+		$user_node = $wp_admin_bar->get_node( 'my-account' );
+		if ( $user_node ) {
+			$user_node->title = str_replace( 'Howdy, ', '', $user_node->title );
+			$wp_admin_bar->add_node( $user_node );
+		}
+	}
+	return $wp_admin_bar;
+}
+
+/**
+ * Validate password strength.
+ */
+function iwf_validate_password_strength( $errors, $update, $user_data ) {
+	if ( empty( $_POST['pass1'] ) || empty( $_POST['pass2'] ) ) {
+		return;
+	}
+
+	$password = sanitize_text_field( wp_unslash( $_POST['pass1'] ) );
+
+	// Check minimum length (12 characters)
+	if ( strlen( $password ) < 12 ) {
+		$errors->add( 'password_too_short', __( 'Password must be at least 12 characters long.', 'integrate-wp-functions' ) );
+	}
+
+	// Check for uppercase
+	if ( ! preg_match( '/[A-Z]/', $password ) ) {
+		$errors->add( 'password_no_uppercase', __( 'Password must contain at least one uppercase letter.', 'integrate-wp-functions' ) );
+	}
+
+	// Check for lowercase
+	if ( ! preg_match( '/[a-z]/', $password ) ) {
+		$errors->add( 'password_no_lowercase', __( 'Password must contain at least one lowercase letter.', 'integrate-wp-functions' ) );
+	}
+
+	// Check for numbers
+	if ( ! preg_match( '/[0-9]/', $password ) ) {
+		$errors->add( 'password_no_numbers', __( 'Password must contain at least one number.', 'integrate-wp-functions' ) );
+	}
+
+	// Check for special characters
+	if ( ! preg_match( '/[!@#$%^&*()_+\-=\[\]{};:"\',.?\/]/', $password ) ) {
+		$errors->add( 'password_no_special', __( 'Password must contain at least one special character (!@#$%^&* etc).', 'integrate-wp-functions' ) );
+	}
 }
 
 /**
