@@ -2,7 +2,7 @@
 
 A site-specific WordPress plugin that provides essential WordPress tweaks and customizations that survive theme updates.
 
-**Version:** 1.4.0
+**Version:** 1.4.1
 
 **Repository:** [https://github.com/jones3036/integrate-wp-functions](https://github.com/jones3036/integrate-wp-functions)
 
@@ -51,7 +51,7 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
   - LiteSpeed Cache
   - WordPress Importer
 - **Plugin Install/Activate Links** - Provides direct install or activate links for recommended plugins when possible
-- **Update Checker** - Automatically checks GitHub for new releases and notifies admins when updates are available, allowing one-click updates directly from the plugins page
+- **Plugin Update Checker** - Automatically checks GitHub for new releases and notifies admins when updates are available, allowing one-click updates directly from the plugins page. Supports both public and private repositories.
 
 ## Installation
 
@@ -59,6 +59,38 @@ A site-specific WordPress plugin that provides essential WordPress tweaks and cu
 2. Rename the folder to `integrate-wp-functions`
 3. Go to **Plugins** in your WordPress admin panel
 4. Find "Integrate WP theme custom functions" and click **Activate**
+
+## Setup for Private Repositories
+
+If your GitHub repository is **private**, you must provide a GitHub Personal Access Token (PAT):
+
+### Option 1: Via Settings (Easier)
+1. Go to **Settings > Integrate WP Functions**
+2. Scroll to **GitHub Private Repository** section
+3. Paste your PAT in the "GitHub Personal Access Token" field
+4. Click **Save Changes**
+
+### Option 2: Via wp-config.php (More Secure)
+Add this to your `wp-config.php` file:
+```php
+define( 'IWF_GITHUB_TOKEN', 'your_github_pat_here' );
+```
+
+### Creating a GitHub Personal Access Token (PAT)
+
+1. Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+2. Click **Generate new token (classic)**
+3. Give it a name (e.g., "WordPress Plugin Updates")
+4. Select the **`repo`** scope (full control of private repositories)
+5. Click **Generate token**
+6. Copy the token (you won't be able to see it again)
+7. Use the token in the plugin settings or wp-config.php
+
+**⚠️ Security Notes:**
+- Keep your token secret. If using Option 1, it's stored in your database.
+- Using wp-config.php (Option 2) is more secure.
+- Only the `repo` scope is needed for private repo access.
+- Tokens don't expire by default but can be regenerated anytime.
 
 ## Usage
 

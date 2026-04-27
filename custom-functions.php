@@ -3,7 +3,7 @@
  * Plugin Name: Integrate WP Theme Custom Functions
  * Plugin URI: https://github.com/jones3036/integrate-wp-functions
  * Description: Site-specific WordPress tweaks that survive theme updates.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: Integrate Solutions
  * Author URI: https://integrate-it.co.uk
  * Text Domain: integrate-wp-functions
@@ -31,6 +31,10 @@ if ( ! defined( 'IWF_GITHUB_REPO' ) ) {
 	define( 'IWF_GITHUB_REPO', 'https://api.github.com/repos/jones3036/integrate-wp-functions' );
 }
 
+if ( ! defined( 'IWF_GITHUB_TOKEN_OPTION' ) ) {
+	define( 'IWF_GITHUB_TOKEN_OPTION', 'iwf_github_token' );
+}
+
 /**
  * Default plugin settings.
  */
@@ -54,6 +58,7 @@ function iwf_get_default_settings() {
 		'remove_howdy_greeting'          => true,
 		'disable_jetpack'                => true,
 		'force_strong_passwords'         => true,
+		'custom_css'                      => false,
 	);
 }
 
@@ -109,12 +114,43 @@ add_action( 'plugins_loaded', 'iwf_load_textdomain' );
  */
 function iwf_register_settings() {
 	register_setting( 'iwf_settings_group', IWF_OPTION_KEY, 'iwf_sanitize_settings' );
+	register_setting( 'iwf_settings_group', IWF_GITHUB_TOKEN_OPTION, 'iwf_sanitize_token' );
 
 	add_settings_section(
 		'iwf_features_section',
 		__( 'Feature toggles', 'integrate-wp-functions' ),
 		'iwf_settings_section_description',
 		'iwf_settings'
+	);
+
+	add_settings_section(
+		'iwf_github_section',
+		__( 'GitHub Private Repository', 'integrate-wp-functions' ),
+		'iwf_github_section_description',
+		'iwf_settings'
+	);
+
+	add_settings_section(
+		'iwf_custom_css_section',
+		__( 'Custom CSS', 'integrate-wp-functions' ),
+		'iwf_custom_css_section_description',
+		'iwf_settings'
+	);
+
+	add_settings_field(
+		'iwf_github_token',
+		__( 'GitHub Personal Access Token', 'integrate-wp-functions' ),
+		'iwf_render_token_field',
+		'iwf_settings',
+		'iwf_github_section'
+	);
+
+	add_settings_field(
+		'iwf_custom_css',
+		__( 'Custom CSS Code', 'integrate-wp-functions' ),
+		'iwf_render_custom_css_field',
+		'iwf_settings',
+		'iwf_custom_css_section'
 	);
 
 	$fields = array(
@@ -169,6 +205,16 @@ function iwf_sanitize_settings( $input ) {
 }
 
 /**
+ * Sanitize GitHub token.
+ */
+function iwf_sanitize_token( $input ) {
+	if ( empty( $input ) ) {
+		return '';
+	}
+	return sanitize_text_field( wp_unslash( $input ) );
+}
+
+/**
  * Render a checkbox field.
  */
 function iwf_render_checkbox_field( $args ) {
@@ -180,6 +226,27 @@ function iwf_render_checkbox_field( $args ) {
 }
 
 /**
+ * Render GitHub token field.
+ */
+function iwf_render_token_field() {
+	$token = get_option( IWF_GITHUB_TOKEN_OPTION );
+	$masked_token = ! empty( $token ) ? '••••••••••••••••' . substr( $token, -4 ) : '';
+	?>
+	<input 
+		type="password" 
+		id="iwf_github_token" 
+		name="<?php echo esc_attr( IWF_GITHUB_TOKEN_OPTION ); ?>" 
+		value="" 
+		placeholder="<?php echo esc_attr( $masked_token ); ?>"
+		style="min-width: 300px;"
+	/>
+	<p class="description">
+		<?php esc_html_e( 'Optional: For private repositories, enter a GitHub Personal Access Token (PAT) with repo access. Leave blank for public repos.', 'integrate-wp-functions' ); ?>
+	</p>
+	<?php
+}
+
+/**
  * Settings section description.
  */
 function iwf_settings_section_description() {
@@ -187,16 +254,38 @@ function iwf_settings_section_description() {
 }
 
 /**
- * Add the settings page.
+ * GitHub section description.
  */
-function iwf_add_admin_menu() {
-	add_options_page(
-		__( 'Integrate WP Functions', 'integrate-wp-functions' ),
-		__( 'Integrate WP Functions', 'integrate-wp-functions' ),
-		'manage_options',
-		'integrate-wp-functions',
-		'iwf_render_settings_page'
-	);
+function iwf_github_section_description() {
+	echo '<p>' . esc_html__( 'Configure GitHub access for private repository updates.', 'integrate-wp-functions' ) . '</p>';
+}
+
+/**
+ * Custom CSS section description.
+ */
+function iwf_custom_css_section_description() {
+	 echo '<p>' . esc_html__( 'Add custom CSS to override site styles. This will be output in the site header.', 'integrate-wp-functions' ) . '</p>';
+}
+
+/**
+ * Render custom CSS textarea field.
+ */
+function iwf_render_custom_css_field() {
+	$settings = iwf_get_settings();
+	$custom_css = isset( $settings['custom_css'] ) ? $settings['custom_css'] : '';
+	?>
+	<textarea
+		id="iwf_custom_css"
+		name="<?php echo esc_attr( IWF_OPTION_KEY ); ?>[custom_css]"
+		rows="10"
+		cols="50"
+		class="large-text code"
+		style="font-family: monospace;"
+	><?php echo esc_textarea( $custom_css ); ?></textarea>
+	<p class="description">
+		<?php esc_html_e( 'Enter your custom CSS here. This will be added to the <head> section of your site.', 'integrate-wp-functions' ); ?>
+	</p>
+	<?php
 }
 add_action( 'admin_menu', 'iwf_add_admin_menu' );
 
@@ -298,6 +387,10 @@ function iwf_setup_features() {
 
 	if ( iwf_setting_enabled( 'force_strong_passwords' ) ) {
 		add_action( 'user_profile_update_errors', 'iwf_validate_password_strength', 10, 3 );
+	}
+
+	if ( iwf_setting_enabled( 'custom_css' ) ) {
+		add_action( 'wp_head', 'iwf_output_custom_css', 99 );
 	}
 }
 add_action( 'init', 'iwf_setup_features' );
@@ -573,6 +666,21 @@ function iwf_validate_password_strength( $errors, $update, $user_data ) {
 }
 
 /**
+ * Output custom CSS in the site header.
+ */
+function iwf_output_custom_css() {
+	$settings = iwf_get_settings();
+	$custom_css = isset( $settings['custom_css'] ) ? $settings['custom_css'] : '';
+
+	if ( ! empty( $custom_css ) ) {
+		echo "\n" . '<!-- Custom CSS from Integrate WP Functions -->' . "\n";
+		echo '<style type="text/css">' . "\n";
+		echo wp_strip_all_tags( $custom_css ) . "\n";
+		echo '</style>' . "\n";
+	}
+}
+
+/**
  * Fetch plugin data in a safe way.
  */
 function iwf_get_plugin_data() {
@@ -581,6 +689,20 @@ function iwf_get_plugin_data() {
 	}
 
 	return get_plugin_data( IWF_PLUGIN_FILE, false, false );
+}
+
+/**
+ * Get GitHub token from constant or options.
+ */
+function iwf_get_github_token() {
+	// Check for constant first (most secure)
+	if ( defined( 'IWF_GITHUB_TOKEN' ) ) {
+		return sanitize_text_field( IWF_GITHUB_TOKEN );
+	}
+
+	// Fall back to option
+	$token = get_option( IWF_GITHUB_TOKEN_OPTION );
+	return ! empty( $token ) ? sanitize_text_field( $token ) : '';
 }
 
 /**
@@ -602,13 +724,20 @@ function iwf_github_update_checker( $transient ) {
 	$remote_data = get_transient( 'iwf_update_check' );
 
 	if ( false === $remote_data ) {
+		$headers = array(
+			'Accept'     => 'application/vnd.github.v3+json',
+			'User-Agent' => 'WordPress/' . get_bloginfo( 'version' ) . ' (' . get_site_url() . ')',
+		);
+
+		$token = iwf_get_github_token();
+		if ( ! empty( $token ) ) {
+			$headers['Authorization'] = 'token ' . $token;
+		}
+
 		$remote_response = wp_remote_get(
 			trailingslashit( IWF_GITHUB_REPO ) . 'releases/latest',
 			array(
-				'headers'   => array(
-					'Accept'     => 'application/vnd.github.v3+json',
-					'User-Agent' => 'WordPress/' . get_bloginfo( 'version' ) . ' (' . get_site_url() . ')',
-				),
+				'headers'   => $headers,
 				'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
 			)
 		);
